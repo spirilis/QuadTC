@@ -77,6 +77,7 @@ typedef enum {
 template <unsigned int tc_count>
 class QuadTC {
     private:
+        SPIClass *_spi;
         uint8_t _spics[tc_count];
         uint8_t _gpio_tcpower;
         int16_t _tctemp[tc_count];
@@ -87,11 +88,17 @@ class QuadTC {
         uint32_t _retrieve_data(unsigned int idx);
 
         #ifdef QUADTC_DEBUG
+        #ifndef QUADTC_DEBUG_STREAM
+        // @brief User-redefinable Stream object for debugging
+        // @details QUADTC_ASSERT debug statements will be sent to the Printable or Stream
+        //          object in this define.
+        #define QUADTC_DEBUG_STREAM Serial
+        #endif
         /// @brief Sends library debugging information to Serial
         void _quadtc_do_assert(const char *s, const int val) {
             // Assumes Serial is available and ready to roll.
-            Serial.print("QuadTC assert triggered: ");
-            Serial.print(s); Serial.print(' '); Serial.println(val);
+            QUADTC_DEBUG_STREAM.print("QuadTC assert triggered: ");
+            QUADTC_DEBUG_STREAM.print(s); QUADTC_DEBUG_STREAM.print(' '); QUADTC_DEBUG_STREAM.println(val);
         }
         #endif
 
@@ -101,6 +108,12 @@ class QuadTC {
         QuadTC(uint8_t tcpower, uint8_t cs1, uint8_t cs2);
         QuadTC(uint8_t tcpower, uint8_t cs1, uint8_t cs2, uint8_t cs3);
         QuadTC(uint8_t tcpower, uint8_t cs1, uint8_t cs2, uint8_t cs3, uint8_t cs4);
+
+        ///
+        /// @brief Replace SPI Instance
+        /// @details Tell this library to use a different instance of SPI besides the default Arduino/Energia
+        ///          "SPI" object.
+        void setSPI(SPIClass *spiclass_instance);
 
         ///
         /// @brief Initialize

@@ -23,6 +23,7 @@
  *   @n Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+
 template <unsigned int tc_count>
 QuadTC<tc_count>::QuadTC()
 {
@@ -48,6 +49,8 @@ QuadTC<tc_count>::QuadTC()
     if (tc_count > 3) {
         _spics[3] = QUADTC_DEFAULT_GPIO_SPICS4;
     }
+
+    _spi = &SPI;
 }
 
 template <unsigned int tc_count>
@@ -112,6 +115,11 @@ QuadTC<tc_count>::QuadTC(uint8_t tcpower, uint8_t cs1, uint8_t cs2, uint8_t cs3,
     }
 }
 
+template <unsigned int tc_count>
+void QuadTC<tc_count>::setSPI(SPIClass *spiclass_instance)
+{
+    _spi = spiclass_instance;
+}
 
 template <unsigned int tc_count>
 void QuadTC<tc_count>::begin(void)
@@ -237,7 +245,7 @@ uint32_t QuadTC<tc_count>::_retrieve_data(unsigned int idx)
     idx--;  // The chip index starts at 1 but our internal arrays start at 0.
     digitalWrite(_spics[idx], LOW);
     for (i=0; i < 4; i++) {
-        b = SPI.transfer(0);
+        b = _spi->transfer(0);
         b <<= 8 * (3-i);
         res |= b;
     }
