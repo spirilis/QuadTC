@@ -185,9 +185,7 @@ unsigned int QuadTC<tc_count>::retrieve(void)
             _faults[i] = BUS_ERROR;
 
             // Nice debugging hook...
-            #ifdef QUADTC_DEBUG
             QUADTC_ASSERT(0, "retrieve: Invalid SPI data received at idx =", i);
-            #endif
         } else {
             // Interpret results!
             datum = res >> 18;
